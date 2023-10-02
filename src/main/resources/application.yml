@@ -1,0 +1,7 @@
+server:
+  port: 4000
+  servlet:
+    context-path: "/cart"
+spring:
+  session:
+    store-type: "none"
