@@ -1,79 +1,70 @@
 package com.gonzalo.cart.controller;
 
-import com.gonzalo.cart.CartCleanupSchedule;
+import com.gonzalo.cart.exception.NotCartFoundException;
 import com.gonzalo.cart.model.Cart;
 import com.gonzalo.cart.model.Product;
-import com.gonzalo.cart.model.ProductListDTO;
+import com.gonzalo.cart.model.dto.ProductListDTO;
+import com.gonzalo.cart.service.CartService;
+import com.gonzalo.cart.service.CartServiceImp;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class CartController {
 
-    Logger log = LoggerFactory.getLogger(CartController.class);
+    private final CartService cartService;
 
-    private final CartCleanupSchedule cartCleanupSchedule;
+    @Value("${log.cart.deleted}")
+    private String deleteCartLog;
 
-    public CartController(CartCleanupSchedule cartCleanupSchedule) {
-        this.cartCleanupSchedule = cartCleanupSchedule;
+    @Value("${log.products.add}")
+    private String productsToAddLog;
+
+    @Value("${log.cart.info}")
+    private String cartInfoFromIdLog;
+
+    @Value("${log.cart.deleting}")
+    private String deletingCartLog;
+
+    public CartController(CartServiceImp cartService) {
+        this.cartService = cartService;
     }
+
+    Logger log = LoggerFactory.getLogger(CartController.class);
 
     @PostMapping(value = "addProduct", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Cart> addProduct(@RequestBody @Valid ProductListDTO products, HttpSession session) {
+        log.info(productsToAddLog, products);
 
-        Cart cart = (Cart) this.cartCleanupSchedule.getSessionAttribute("cart");
-
-        if (cart == null) {
-            cart = new Cart((this.cartCleanupSchedule.getSessionAttribute("lastCardId") != null ? Long.parseLong(this.cartCleanupSchedule.getSessionAttribute("lastCardId").toString()) : 0l));
-        }
-
-        cart.addProducts(products.getProducts());
-
-        this.cartCleanupSchedule.addSessionAttribute("cart", cart);
-        this.cartCleanupSchedule.addSessionAttribute("lastCardId", cart.getId());
-        this.cartCleanupSchedule.addSessionAttribute("lastCardUpdate", new Date());
-        this.cartCleanupSchedule.cleanupCart();
+        Cart cart = cartService.addProducts(products.getProducts(), session);
 
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cart> getCart(@PathVariable("id") Long cartId) {
-        Cart cart = (Cart) this.cartCleanupSchedule.getSessionAttribute("cart");
+    public ResponseEntity<Cart> getCart(@PathVariable("id") Long cartId, HttpSession session) throws NotCartFoundException {
+        log.info(cartInfoFromIdLog, cartId);
 
-        if (cart != null && cart.getId().equals(cartId)) {
-            return new ResponseEntity<>(cart, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        Cart cart = cartService.getCartInfo(cartId, session);
+
+        return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "delete")
     public ResponseEntity<?> deleteCart(HttpSession session) {
-        session.removeAttribute("cart");
+        log.info(deletingCartLog);
 
-        return new ResponseEntity<>("Cart deleted", HttpStatus.OK);
-    }
+        cartService.deleteCart(session);
 
-    @PostMapping(value = "addProductError", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cart> addProductError(@Valid @RequestBody Product products) {
-
-        Cart cart = (Cart) this.cartCleanupSchedule.getSessionAttribute("cart");
-
-        if (cart == null) {
-            cart = new Cart((this.cartCleanupSchedule.getSessionAttribute("lastCardId") != null ? Long.parseLong(this.cartCleanupSchedule.getSessionAttribute("lastCardId").toString()) : 0l));
-        }
-
-        return new ResponseEntity<>(cart, HttpStatus.OK);
+        return new ResponseEntity<>(deleteCartLog, HttpStatus.OK);
     }
 }

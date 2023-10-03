@@ -1,8 +1,6 @@
-package com.gonzalo.cart.exception;
+package com.gonzalo.cart.exception.handler;
 
 import com.gonzalo.cart.model.errors.RequestValidationError;
-import com.gonzalo.cart.model.errors.ResponseError;
-import jakarta.validation.UnexpectedTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

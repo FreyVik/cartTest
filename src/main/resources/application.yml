@@ -2,6 +2,8 @@ server:
   port: 4000
   servlet:
     context-path: "/cart"
+    session:
+      timeout: 600
 spring:
   session:
     store-type: "none"
