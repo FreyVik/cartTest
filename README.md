@@ -27,3 +27,12 @@ If you want to test that two individuals have different carts, you can add one c
 ## Extras
 
 Since this is a test project, I have implemented various methods to solve similar problems. This demonstrates my knowledge of different techniques, such as using the `application.properties` file to generate logs and creating a class with static variables for use as constants in other classes.
+
+I integrate this service with docker too, if you want to deploy it, you can follow this steps
+1. Run `mvn clean install` to generate the .jar file [cart-0.0.1-SNAPSHOT.jar](target%2Fcart-0.0.1-SNAPSHOT.jar)
+2. Open your terminal on root project where is the [Dockerfile](Dockerfile).
+3. Run `docker build -t "cart-docker" .`.
+4. Finally run `docker run --name cart-springboot -p 9000:4000 cart-docker:latest`
+
+Now your service is running on localhost:9000. If you want to change expose docker port, you must change the value of **EXPOSE** in [Dockerfile](Dockerfile) and refactor de last command with `docker run --name cart-springboot -p {newExposePort}:4000 cart-docker:latest`.
+You can change internal port too if you want, you have to change property `server.port` in [application.yml](src%2Fmain%2Fresources%2Fapplication.yml) and change last command with `docker run --name cart-springboot -p 9000:{newInternalPort} cart-docker:latest`
