@@ -3,7 +3,7 @@ server:
   servlet:
     context-path: "/cart"
     session:
-      timeout: 15
+      timeout: 600
 spring:
   session:
     store-type: "none"

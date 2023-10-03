@@ -2,10 +2,8 @@ package com.gonzalo.cart.model;
 
 public class Constants {
 
-    public final static String LAST_CART_UPDATE_ATTRIBUTE = "lastCardUpdate";
-
     public final static String CART_ATTRIBUTE = "cart";
 
-    public final static Integer SESSION_TIMEOUT = 15;
+    public final static Integer SESSION_TIMEOUT = 600;
 
 }
