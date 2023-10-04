@@ -24,9 +24,10 @@ With these configurations, the session will be renewed every time the cart is up
 
 If you want to test that two individuals have different carts, you can add one cart using Postman and another using Swagger. This will create two separate sessions with two different carts. The session from Postman will never be able to access the cart from Swagger, and vice versa.
 
-## Extras
+## Api first
+I implement API-first specification using the Codegen Maven plugin. This means that I define my API with the [cart-api.yml](src%2Fmain%2Fresources%2Fcart-api.yml) , and the plugin reads it to generate DTO models and a main controller interface. This approach offers several advantages, including establishing a clear contract between the backend and frontend teams and ensuring that all members of the development team work on the same implementation, fostering a more secure and collaborative teamwork environment.
 
-Since this is a test project, I have implemented various methods to solve similar problems. This demonstrates my knowledge of different techniques, such as using the `application.properties` file to generate logs and creating a class with static variables for use as constants in other classes.
+## Docker
 
 I integrate this service with docker too, if you want to deploy it, you can follow this steps
 1. Run `mvn clean install` to generate the .jar file [cart-0.0.1-SNAPSHOT.jar](target%2Fcart-0.0.1-SNAPSHOT.jar)
