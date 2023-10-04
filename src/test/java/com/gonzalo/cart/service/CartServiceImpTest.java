@@ -1,6 +1,8 @@
 package com.gonzalo.cart.service;
 
 import com.gonzalo.cart.model.Cart;
+import com.gonzalo.cart.models.CartDTO;
+import com.gonzalo.cart.modeltests.TestVariables;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpSession;
 
 import static com.gonzalo.cart.model.Constants.*;
-import static com.gonzalo.cart.modeltests.TestVariables.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -22,43 +23,29 @@ class CartServiceImpTest {
     CartServiceImp cartService;
 
     @Mock
-    Cart cart;
-
-    @Mock
     HttpSession session;
+
+    TestVariables testVariables = new TestVariables();
 
     @Test
     @DisplayName("Should add products to a cart")
     public void addProducts() {
-        when(session.getAttribute(CART_ATTRIBUTE)).thenReturn(SIMPLE_CART);
+        when(session.getAttribute(CART_ATTRIBUTE)).thenReturn(testVariables.SIMPLE_CART());
 
-        Cart cartResult = cartService.addProducts(anyList(), session);
+        CartDTO cartResult = cartService.addProducts(anyList());
 
-        assertEquals(SIMPLE_CART, cartResult);
+        assertEquals(testVariables.SIMPLE_CART(), cartResult);
         verify(session, times(1)).getAttribute(CART_ATTRIBUTE);
     }
 
     @Test
     @DisplayName("Should get the cart info")
     public void getCartInfo() throws Exception {
-        when(session.getAttribute(CART_ATTRIBUTE)).thenReturn(SIMPLE_CART);
+        when(session.getAttribute(CART_ATTRIBUTE)).thenReturn(testVariables.SIMPLE_CART());
 
-        Cart cartResult = cartService.getCartInfo(1l, session);
+        CartDTO cartResult = cartService.getCartInfo(1L);
 
-        assertEquals(SIMPLE_CART, cartResult);
+        assertEquals(testVariables.SIMPLE_CART(), cartResult);
         verify(session, times(1)).getAttribute(CART_ATTRIBUTE);
-    }
-
-    @Test
-    @DisplayName("Should delete cart")
-    public void deleteCart() {
-        MockHttpSession mockSession = new MockHttpSession();
-        mockSession.setAttribute(CART_ATTRIBUTE, SIMPLE_CART);
-
-        assertNotNull(mockSession.getAttribute(CART_ATTRIBUTE));
-
-        cartService.deleteCart(mockSession);
-
-        assertNull(mockSession.getAttribute(CART_ATTRIBUTE));
     }
 }

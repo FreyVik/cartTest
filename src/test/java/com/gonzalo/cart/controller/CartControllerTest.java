@@ -1,6 +1,7 @@
 package com.gonzalo.cart.controller;
 
 import com.gonzalo.cart.model.Cart;
+import com.gonzalo.cart.modeltests.TestVariables;
 import com.gonzalo.cart.service.CartService;
 import com.gonzalo.cart.service.CartServiceImp;
 import org.junit.jupiter.api.DisplayName;
@@ -26,31 +27,33 @@ class CartControllerTest {
 
     MockHttpSession session = new MockHttpSession();
 
+    TestVariables testVariables = new TestVariables();
+
     @Test
     @DisplayName("Should call to addProducts()")
     public void callAddProducts() {
-        when(cartService.addProducts(SIMPLE_PRODUCT_LIST, session)).thenReturn(SIMPLE_CART);
+        when(cartService.addProducts(testVariables.SIMPLE_PRODUCT_LIST())).thenReturn(testVariables.SIMPLE_CART());
 
-        cartController.addProduct(SIMPLE_PRODUCT_DTO_LIST, session);
+        cartController.addProduct(testVariables.SIMPLE_PRODUCT_DTO_LIST());
 
-        verify(cartService, times(1)).addProducts(SIMPLE_PRODUCT_LIST, session);
+        verify(cartService, times(1)).addProducts(testVariables.SIMPLE_PRODUCT_LIST());
     }
 
     @Test
     @DisplayName("Should call to getCartInfo()")
     public void callGetCartInfo() throws Exception {
-        when(cartService.getCartInfo(1l, session)).thenReturn(SIMPLE_CART);
+        when(cartService.getCartInfo(1L)).thenReturn(testVariables.SIMPLE_CART());
 
-        cartController.getCart(1l, session);
+        cartController.getCart(1L);
 
-        verify(cartService, times(1)).getCartInfo(1l, session);
+        verify(cartService, times(1)).getCartInfo(1L);
     }
 
     @Test
     @DisplayName("Should call to deleteCart()")
     public void callDeleteCart() {
-        cartController.deleteCart(session);
+        cartController.deleteCart();
 
-        verify(cartService, times(1)).deleteCart(session);
+        verify(cartService, times(1)).deleteCart();
     }
 }
